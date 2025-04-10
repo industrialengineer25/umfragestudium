@@ -1,1 +1,304 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studienumfrage – Hochschule Kempten</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* --------------------- Allgemeines Layout --------------------- */
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #eef2f3, #8e9eab);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
+    .background-watermark {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 0;
+      background-image: repeating-linear-gradient(
+        45deg,
+        rgba(0,0,0,0.03) 0px,
+        rgba(0,0,0,0.03) 2px,
+        transparent 2px,
+        transparent 80px
+      );
+      pointer-events: none;
+    }
+
+    .watermark-text {
+      position: fixed;
+      font-size: 100px;
+      font-weight: bold;
+      color: rgba(255, 255, 255, 0.04);
+      transform: rotate(-30deg);
+      z-index: 0;
+      white-space: nowrap;
+      top: 50%;
+      left: -100px;
+      width: 200%;
+      text-align: center;
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      max-width: 900px;
+      margin: 60px auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+      padding: 40px;
+      animation: fadeSlideIn 1.5s ease-in-out;
+    }
+
+    @keyframes fadeSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      color: #333;
+      text-align: center;
+    }
+
+    h2.subtitle {
+      font-size: 1.2rem;
+      text-align: center;
+      color: #666;
+      margin-bottom: 40px;
+    }
+
+    .form-section {
+      margin-bottom: 30px;
+    }
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-bottom: 20px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+      outline: none;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .checkbox-group label {
+      background: #f3f4f6;
+      padding: 10px 15px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      transform: scale(1.5);
+    }
+
+    .checkbox-group label:hover {
+      background: #dbeafe;
+    }
+
+    .rating-scale {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 25px;
+    }
+
+    .rating-scale label {
+      font-weight: normal;
+    }
+
+    .btn-submit {
+      display: block;
+      width: 100%;
+      padding: 18px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: white;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .btn-submit:hover {
+      background: linear-gradient(to right, #5a67d8, #6b46c1);
+    }
+
+    .timestamp {
+      position: fixed;
+      top: 15px;
+      right: 20px;
+      font-size: 14px;
+      font-weight: bold;
+      color: white;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 6px 12px;
+      border-radius: 8px;
+      z-index: 1000;
+    }
+
+    .progress-container {
+      height: 5px;
+      width: 100%;
+      background: #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 30px;
+    }
+
+    .progress-bar {
+      height: 5px;
+      width: 0;
+      background: #667eea;
+      transition: width 0.4s ease-in-out;
+    }
+  </style>
+</head>
+<body>
+  <div class="background-watermark"></div>
+  <div class="watermark-text">Hochschule Kempten – Hochschule Kempten – Hochschule Kempten</div>
+  <div class="timestamp" id="timestamp"></div>
+  <div class="container">
+    <h1>Umfrage zum Studium</h1>
+    <h2 class="subtitle">Bitte nimm dir kurz Zeit und beantworte die folgenden Fragen ehrlich.</h2>
+
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <form id="survey-form" action="https://script.google.com/macros/s/AKfycbxbRqh57uOyslGudeq3d5XtGFdjv4vg9mf1xtBLVP_TAeD--wKWER-yqVANQjhyN4s/exec" method="POST">
+
+      <div class="form-section">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="studiengang">Studiengang:</label>
+        <input type="text" id="studiengang" name="studiengang" required>
+
+        <label for="semester">Semester:</label>
+        <input type="number" id="semester" name="semester" min="1" max="20" required>
+      </div>
+
+      <div class="form-section">
+        <label for="zufriedenheit">Wie zufrieden bist du?</label>
+        <select id="zufriedenheit" name="zufriedenheit" required>
+          <option value="Sehr zufrieden">Sehr zufrieden</option>
+          <option value="Zufrieden">Zufrieden</option>
+          <option value="Neutral">Neutral</option>
+          <option value="Unzufrieden">Unzufrieden</option>
+          <option value="Sehr unzufrieden">Sehr unzufrieden</option>
+        </select>
+      </div>
+
+      <div class="form-section">
+        <label for="verbesserungen">Was sollte verbessert werden?</label>
+        <input type="text" id="verbesserungen" name="verbesserungen">
+
+        <label for="empfehlung">Würdest du die Hochschule weiterempfehlen?</label>
+        <select id="empfehlung" name="empfehlung" required>
+          <option value="Ja">Ja</option>
+          <option value="Nein">Nein</option>
+        </select>
+      </div>
+
+      <div class="form-section">
+        <label for="interessen">Welche Angebote interessieren dich? (Mehrfachauswahl)</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="interessen" value="Sport"> Sport</label>
+          <label><input type="checkbox" name="interessen" value="Kultur"> Kultur</label>
+          <label><input type="checkbox" name="interessen" value="Workshops"> Workshops</label>
+          <label><input type="checkbox" name="interessen" value="Exkursionen"> Exkursionen</label>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <label for="kommentar">Weitere Kommentare:</label>
+        <textarea id="kommentar" name="kommentar" rows="4"></textarea>
+      </div>
+
+      <button type="submit" class="btn-submit">Absenden</button>
+    </form>
+  </div>
+
+  <script>
+    // Timestamp aktualisieren
+    function updateTimestamp() {
+      const now = new Date();
+      const date = now.toLocaleDateString();
+      const time = now.toLocaleTimeString();
+      document.getElementById("timestamp").textContent = `📅 ${date} ⏰ ${time}`;
+    }
+    updateTimestamp();
+    setInterval(updateTimestamp, 1000);
+
+    // Fortschrittsbalken
+    const form = document.getElementById("survey-form");
+    const progressBar = document.getElementById("progress-bar");
+    const inputs = form.querySelectorAll("input, select, textarea");
+
+    function updateProgress() {
+      let filled = 0;
+      inputs.forEach(input => {
+        if ((input.type === "checkbox" && input.checked) || (input.type !== "checkbox" && input.value.trim() !== "")) {
+          filled++;
+        }
+      });
+      const progress = (filled / inputs.length) * 100;
+      progressBar.style.width = progress + "%";
+    }
+
+    inputs.forEach(input => {
+      input.addEventListener("input", updateProgress);
+      input.addEventListener("change", updateProgress);
+    });
+
+    updateProgress();
+  </script>
+</body>
+</html>
